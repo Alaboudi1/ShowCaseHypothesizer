@@ -144,7 +144,7 @@ function App() {
   // }, [time]);
 
   React.useEffect(() => {
-    setInterval(() => {
+    const intervalID = setInterval(() => {
       const date = new Date();
       const [month, day, year] = [
         date.getMonth(),
@@ -159,8 +159,11 @@ function App() {
       updateTime(
         `Time: ${hour}:${minutes}:${seconds}, Date: ${month}/${day}/${year}`
       );
-    }, 100);
-  }, []);
+    }, 1000);
+    return () => {
+      clearInterval(intervalID);
+    };
+  }); // bug it should be []
   const handleTodos = () => {
     updateTodos(
       todos.concat([
