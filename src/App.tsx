@@ -88,57 +88,38 @@ function TodoItem(props: TodoProps) {
   const { todo, onDelete, onUp, onDown } = props;
 
   return (
-    <tr>
-      <td className="task-desc text-gray-700 text-base">
+    <tr className="bg-transparent ">
+      <td className="task-desc text-gray-700 text-base w-2/3  ">
+        {" "}
+        {todo.key}{" "}
+      </td>
+      <td className="task-desc text-gray-700 text-base w-2/3  ">
         {" "}
         {todo.description}{" "}
       </td>
-      <td className="task-time text-gray-700 text-base">
+      <td className="task-time text-gray-700 text-base w-1/6 ">
         {" "}
         {todo.timeStarted}{" "}
       </td>
-      <td className="text-gray-700 text-base">
-        {" "}
-        <button
-          onClick={onDelete}
-          className="outline-none mr-1 mb-1 px-3 py-1 bg-transprent text-xs font-bold text-blue-500 uppercase focus:outline-none"
-        >
-          {" "}
-          Delete{" "}
-        </button>{" "}
-      </td>
-      <td className="text-gray-700 text-base">
-        {" "}
-        <button
-          onClick={onUp}
-          className="outline-none mr-1 mb-1 px-3 py-1 bg-transprent text-xs font-bold text-blue-500 uppercase focus:outline-none"
-        >
-          {" "}
-          Up{" "}
-        </button>{" "}
-      </td>
-      <td className="text-gray-700 text-base">
-        {" "}
-        <button
-          onClick={onDown}
-          className="outline-none mr-1 mb-1 px-3 py-1 bg-transprent text-xs font-bold text-blue-500 uppercase focus:outline-none"
-        >
-          {" "}
-          Down{" "}
-        </button>{" "}
+      <td className="w-1/6">
+        <button onClick={onDelete} className="  text-lg ">
+          ❌
+        </button>
+        <button onClick={onUp} className="text-lg ">
+          ⬆️
+        </button>
+        <button onClick={onDown} className=" text-lg ">
+          ⬇️
+        </button>
       </td>
     </tr>
   );
 }
 
 function App() {
-  const [todos, updateTodos] = useState([
-    { description: " ", key: 0, timeStarted: " " },
-  ]);
+  const [todos, updateTodos] = useState<Todo[]>([]);
   const [textInInput, updateText] = useState("");
   const [time, updateTime] = useState("");
-
-  var d = new Date();
 
   React.useEffect(() => {
     const intervalID = setInterval(() => {
@@ -206,18 +187,17 @@ function App() {
             className="bg-blue-500 text-white px-6 py-2 rounded font-medium mx-3 hover:bg-blue-600 transition duration-200 each-in-out"
             onClick={handleTodos}
           >
-            {" "}
             Add Todo{" "}
           </button>
         </div>
       </div>
-      <table className="table-fixed bg-white shadow-md rounded-lg p-50">
+      <table className="table-fixed shadow-md rounded-lg mx-auto w-1/2">
         <thead>
-          <tr>
-            <th className="text-gray-700 text-base w-1/4"> Task </th>
-            <th className="text-gray-700 text-base w-1/4"> Time Started </th>
-            <th className="w-1/8"> </th>
-            <th className="w-1/8"> </th>
+          <tr className=" bg-white">
+            <th className="text-gray-700 text-base w-1/6"> Id </th>
+            <th className="text-gray-700 text-base w-2/3"> Task </th>
+            <th className="text-gray-700 text-base w-1/6"> Time Started </th>
+            <th className="text-gray-700 text-base w-1/6"> Options </th>
           </tr>
         </thead>
         <tbody>
