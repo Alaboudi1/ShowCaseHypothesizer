@@ -121,8 +121,30 @@ function App() {
   const [textInInput, updateText] = useState("");
   const [time, updateTime] = useState("");
 
+  // React.useEffect(() => {
+  //   const intervalID = setInterval(() => {
+  //     const date = new Date();
+  //     const [month, day, year] = [
+  //       date.getMonth(),
+  //       date.getDate(),
+  //       date.getFullYear(),
+  //     ];
+  //     const [hour, minutes, seconds] = [
+  //       date.getHours(),
+  //       date.getMinutes(),
+  //       date.getSeconds(),
+  //     ];
+  //     updateTime(
+  //       `Time: ${hour}:${minutes}:${seconds}, Date: ${month}/${day}/${year}`
+  //     );
+  //   }, 100);
+  //   return () => {
+  //     clearInterval(intervalID);
+  //   };
+  // }, [time]);
+
   React.useEffect(() => {
-    const intervalID = setInterval(() => {
+    setInterval(() => {
       const date = new Date();
       const [month, day, year] = [
         date.getMonth(),
@@ -138,21 +160,7 @@ function App() {
         `Time: ${hour}:${minutes}:${seconds}, Date: ${month}/${day}/${year}`
       );
     }, 100);
-    return () => {
-      clearInterval(intervalID);
-    };
-  }, [time]);
-
-  /*React.useEffect(() => {
-
-    const intervalID = setInterval(() => {            //buggy implementation
-      updateTime(d.toString());
-      console.log(time);
-    }, 100);
-    return () => {
-      clearInterval(intervalID)
-    }
-  }, [time]);*/
+  }, []);
   const handleTodos = () => {
     updateTodos(
       todos.concat([
