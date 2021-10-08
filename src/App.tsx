@@ -5,79 +5,12 @@ import "./App.css";
 interface Todo {
   description: string;
   key: number;
-  dueDate: Date;
 }
 
 //Props for the TodoItem function
 interface TodoProps {
   todo: Todo;
   onDelete(): void;
-}
-
-function upHandler(
-  todo: Todo,
-  todos: { description: string; key: number; dueDate: string }[],
-  updateTodos: {
-    (
-      value: React.SetStateAction<
-        { description: string; key: number; dueDate: string }[]
-      >
-    ): void;
-    (arg0: (array: Todo[]) => Todo[]): void;
-  }
-) {
-  let index = 0;
-
-  for (const element of todos) {
-    if (element.key === todo.key) {
-      break;
-    }
-
-    index++;
-  }
-
-  if (index !== 0) {
-    updateTodos((array: Array<Todo>) => {
-      let data = [...array];
-      let temp = data[index];
-      data[index] = data[index - 1];
-      data[index - 1] = temp;
-      return data;
-    });
-  }
-}
-
-function downHandler(
-  todo: Todo,
-  todos: { description: string; key: number; dueDate: string }[],
-  updateTodos: {
-    (
-      value: React.SetStateAction<
-        { description: string; key: number; dueDate: string }[]
-      >
-    ): void;
-    (arg0: (array: Todo[]) => Todo[]): void;
-  }
-) {
-  let index = 0;
-
-  for (const element of todos) {
-    if (element.key === todo.key) {
-      break;
-    }
-
-    index++;
-  }
-
-  if (index !== todos.length - 1) {
-    updateTodos((array: Array<Todo>) => {
-      let data = [...array];
-      let temp = data[index];
-      data[index] = data[index + 1];
-      data[index + 1] = temp;
-      return data;
-    });
-  }
 }
 
 //TodoItem functional component
@@ -88,15 +21,7 @@ function TodoItem(props: TodoProps) {
     <tr className="bg-transparent ">
       <td className="task-desc text-gray-700 text-base w-2/3  ">
         {" "}
-        {todo.key}{" "}
-      </td>
-      <td className="task-desc text-gray-700 text-base w-2/3  ">
-        {" "}
         {todo.description}{" "}
-      </td>
-      <td className="task-time text-gray-700 text-base w-1/6 ">
-        {" "}
-        {todo.dueDate.toLocaleDateString()}{" "}
       </td>
       <td className="w-1/6">
         <button onClick={onDelete} className="  text-lg ">
@@ -111,40 +36,47 @@ function App() {
   const [todos, updateTodos] = useState<Todo[]>([]);
   const [textInInput, updateText] = useState("");
   //get today's date
-  const [dueDate, updateDueDate] = useState(new Date());
 
-  // React.useEffect(() => {
-  //   const intervalID = setInterval(() => {
-  //     const date = new Date();
-  //     const [month, day, year] = [
-  //       date.getMonth(),
-  //       date.getDate(),
-  //       date.getFullYear(),
-  //     ];
-  //     const [hour, minutes, seconds] = [
-  //       date.getHours(),
-  //       date.getMinutes(),
-  //       date.getSeconds(),
-  //     ];
-  //     updateTime(
-  //       `Time: ${hour}:${minutes}:${seconds}, Date: ${month}/${day}/${year}`
-  //     );
-  //   }, 1000);
-  //   return () => {
-  //     clearInterval(intervalID);
-  //   };
-  // }, [time]); // bug it should be []
+  useEffect(() => {
+    const savedTodos = JSON.parse(localStorage.getItem("todos") || "[]").map((todo:Todo) =>{
+      return {
+        description: todo.description,
+        key: todo.key,
+      }
+    });
+    updateTodos(savedTodos);
+  }, []);
+
+useEffect(() => {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}, [todos]);
+  
+
   const handleTodos = () => {
     updateTodos(
       todos.concat([
         {
           description: textInInput,
           key: todos.length,
-          dueDate: dueDate,
         },
       ])
     );
   };
+  const loadTodos = () =>{
+    fetch("https://todo-lsit.p.rapidapi.com/todoList", {
+	"method": "GET",
+	"headers": {
+		"x-rapidapi-host": "todo-lsit.p.rapidapi.com",
+		"x-rapidapi-key": "c1ba9c9feemsh5475fb079d808efp1f316fjsn1f3a1bb1cde7"
+	}
+})
+  .then((todos:any) => {
+	updateTodos([].concat(todos));
+  })
+  .catch(err => {
+	console.error(err);
+});
+  }
   return (
     <div className="app">
       <header className="title-header">
@@ -161,20 +93,21 @@ function App() {
               updateText(e.target.value);
             }}
           />
-          <span style={{ marginLeft: "10px", color:"black" }}>
-             <input type="date" value={dueDate.toLocaleDateString("en-UK").split("/").reverse().join("-")} onChange={(e) => {
-            updateDueDate(new Date(e.target.value));
-            console.log(new Date(e.target.value).toLocaleDateString("en-UK").split("/").reverse().join("-"));
-          }} />
-          </span>
-
-
+         
           <button
             type="button"
             className="bg-blue-500 text-white px-6 py-2 rounded font-medium mx-3 hover:bg-blue-600 transition duration-200 each-in-out"
             onClick={handleTodos}
           >
             Add Todo{" "}
+          </button>
+
+          <button
+            type="button"
+            className="bg-green-500 text-white px-6 py-2 rounded font-medium mx-3 hover:bg-green-600 transition duration-200 each-in-out"
+            onClick={loadTodos}
+          >
+            Load Todos{" "}
           </button>
         </div>
       </div>
@@ -188,7 +121,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {todos.sort((todo1,todo2) => todo1.dueDate.getTime()- todo2.dueDate.getTime()).map((todo) => (
+          {todos.map((todo) => (
             <TodoItem
               todo={todo}
               key={todo.key}
