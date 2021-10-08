@@ -70,8 +70,8 @@ useEffect(() => {
 		"x-rapidapi-key": "c1ba9c9feemsh5475fb079d808efp1f316fjsn1f3a1bb1cde7"
 	}
 })
-  .then((todos:any) => {
-	updateTodos([].concat(todos));
+  .then((incommingTodos:any) => {
+	updateTodos(todos.concat(incommingTodos));
   })
   .catch(err => {
 	console.error(err);
