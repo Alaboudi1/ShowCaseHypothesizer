@@ -1,29 +1,26 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import Clock from "react-live-clock";
 
 //Represents a single todo item
 interface Todo {
   description: string;
   key: number;
-  timeStarted: string;
+  dueDate: Date;
 }
 
 //Props for the TodoItem function
 interface TodoProps {
   todo: Todo;
   onDelete(): void;
-  onUp(): void;
-  onDown(): void;
 }
 
 function upHandler(
   todo: Todo,
-  todos: { description: string; key: number; timeStarted: string }[],
+  todos: { description: string; key: number; dueDate: string }[],
   updateTodos: {
     (
       value: React.SetStateAction<
-        { description: string; key: number; timeStarted: string }[]
+        { description: string; key: number; dueDate: string }[]
       >
     ): void;
     (arg0: (array: Todo[]) => Todo[]): void;
@@ -52,11 +49,11 @@ function upHandler(
 
 function downHandler(
   todo: Todo,
-  todos: { description: string; key: number; timeStarted: string }[],
+  todos: { description: string; key: number; dueDate: string }[],
   updateTodos: {
     (
       value: React.SetStateAction<
-        { description: string; key: number; timeStarted: string }[]
+        { description: string; key: number; dueDate: string }[]
       >
     ): void;
     (arg0: (array: Todo[]) => Todo[]): void;
@@ -85,7 +82,7 @@ function downHandler(
 
 //TodoItem functional component
 function TodoItem(props: TodoProps) {
-  const { todo, onDelete, onUp, onDown } = props;
+  const { todo, onDelete} = props;
 
   return (
     <tr className="bg-transparent ">
@@ -99,17 +96,11 @@ function TodoItem(props: TodoProps) {
       </td>
       <td className="task-time text-gray-700 text-base w-1/6 ">
         {" "}
-        {todo.timeStarted}{" "}
+        {todo.dueDate.toLocaleDateString()}{" "}
       </td>
       <td className="w-1/6">
         <button onClick={onDelete} className="  text-lg ">
           ❌
-        </button>
-        <button onClick={onUp} className="text-lg ">
-          ⬆️
-        </button>
-        <button onClick={onDown} className=" text-lg ">
-          ⬇️
         </button>
       </td>
     </tr>
@@ -119,7 +110,8 @@ function TodoItem(props: TodoProps) {
 function App() {
   const [todos, updateTodos] = useState<Todo[]>([]);
   const [textInInput, updateText] = useState("");
-  const [time, updateTime] = useState("");
+  //get today's date
+  const [dueDate, updateDueDate] = useState(new Date());
 
   // React.useEffect(() => {
   //   const intervalID = setInterval(() => {
@@ -137,40 +129,18 @@ function App() {
   //     updateTime(
   //       `Time: ${hour}:${minutes}:${seconds}, Date: ${month}/${day}/${year}`
   //     );
-  //   }, 100);
+  //   }, 1000);
   //   return () => {
   //     clearInterval(intervalID);
   //   };
-  // }, [time]);
-
-  React.useEffect(() => {
-    const intervalID = setInterval(() => {
-      const date = new Date();
-      const [month, day, year] = [
-        date.getMonth(),
-        date.getDate(),
-        date.getFullYear(),
-      ];
-      const [hour, minutes, seconds] = [
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds(),
-      ];
-      updateTime(
-        `Time: ${hour}:${minutes}:${seconds}, Date: ${month}/${day}/${year}`
-      );
-    }, 1000);
-    return () => {
-      clearInterval(intervalID);
-    };
-  }); // bug it should be []
+  // }, [time]); // bug it should be []
   const handleTodos = () => {
     updateTodos(
       todos.concat([
         {
           description: textInInput,
           key: todos.length,
-          timeStarted: time,
+          dueDate: dueDate,
         },
       ])
     );
@@ -182,7 +152,6 @@ function App() {
       </header>
 
       <div className="todo-creator">
-        <span className="text-xl"> {time} </span>
         <div className="form">
           <input
             className="shadow appearance-none border rounded w-half py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -192,6 +161,13 @@ function App() {
               updateText(e.target.value);
             }}
           />
+          <span style={{ marginLeft: "10px", color:"black" }}>
+             <input type="date" value={dueDate.toLocaleDateString("en-UK").split("/").reverse().join("-")} onChange={(e) => {
+            updateDueDate(new Date(e.target.value));
+            console.log(new Date(e.target.value).toLocaleDateString("en-UK").split("/").reverse().join("-"));
+          }} />
+          </span>
+
 
           <button
             type="button"
@@ -212,15 +188,13 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {todos.map((todo) => (
+          {todos.sort((todo1,todo2) => todo1.dueDate.getTime()- todo2.dueDate.getTime()).map((todo) => (
             <TodoItem
               todo={todo}
               key={todo.key}
               onDelete={() =>
                 updateTodos(todos.filter((curTodo) => curTodo.key !== todo.key))
               }
-              onUp={() => upHandler(todo, todos, updateTodos)}
-              onDown={() => downHandler(todo, todos, updateTodos)}
             />
           ))}
         </tbody>
