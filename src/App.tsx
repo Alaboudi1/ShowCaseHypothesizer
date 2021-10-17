@@ -62,6 +62,11 @@ useEffect(() => {
       ])
     );
   };
+
+
+
+
+  ////////////////////////////////////////////////////////
   const loadTodos = () =>{
     fetch("https://todo-lsit.p.rapidapi.com/todoList", {
 	"method": "GET",
@@ -70,6 +75,7 @@ useEffect(() => {
 		"x-rapidapi-key": "c1ba9c9feemsh5475fb079d808efp1f316fjsn1f3a1bb1cde7"
 	}
 })
+
   .then((data:any) => {
 	updateTodos(todos.concat(data));
   })
@@ -77,6 +83,10 @@ useEffect(() => {
 	console.error(err);
 });
   }
+
+/////////////////////////////////////////////////////////////
+
+
   return (
     <div className="app">
       <header className="title-header">
