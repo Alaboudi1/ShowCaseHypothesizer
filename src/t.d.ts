@@ -1,15 +1,16 @@
 
 //Represents a single todo item
 export interface Todo {
-  description: string;
-  key: number;
-  timeStarted: number;
+  title: string;
+  id: number;
+  timeStarted: Date;
+  finished: boolean;
+  favorite: boolean;
 }
 
-//Props for the TodoItem function
-export interface TodoProps {
-  todo: Todo;
-  onDelete(): void;
-  onUp(): void;
-  onDown(): void;
+
+export interface TodoList {
+  unfinishedTodos: Todo[];
+  finishedTodos: Todo[];
 }
+
